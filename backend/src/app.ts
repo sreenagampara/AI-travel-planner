@@ -49,6 +49,13 @@ app.use(express.urlencoded({ extended: true }));
 // Request Logger
 app.use(requestLogger);
 
+app.get("/", (req, res) => {
+  res.status(200).json({
+    status: "OK",
+    message: "AI Travel Planner Backend is running"
+  });
+});
+
 // API Routes
 app.use('/api', apiRouter);
 

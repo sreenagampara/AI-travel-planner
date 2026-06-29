@@ -25,7 +25,7 @@ export class CloudinaryService {
         {
           folder,
           public_id: publicId,
-          resource_type: 'auto', // Detects images or PDFs automatically
+          resource_type: 'raw',
         },
         (error, result) => {
           if (error) {

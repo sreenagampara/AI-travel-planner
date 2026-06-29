@@ -1,17 +1,22 @@
-import { env } from '../config/env';
-import { genAI } from '../config/gemini';
-import logger from '../utils/logger';
-import { validateTravelData, validateItineraryData, TravelData, ItineraryData } from '../validators/gemini.validator';
+import { env } from "../config/env";
+import { genAI } from "../config/gemini";
+import logger from "../utils/logger";
+import {
+  validateTravelData,
+  validateItineraryData,
+  TravelData,
+  ItineraryData,
+} from "../validators/gemini.validator";
 
 export class GeminiService {
   private parseJsonResponse<T>(responseText: string): T {
     try {
       return JSON.parse(responseText) as T;
     } catch (parseError: any) {
-      logger.warn('Gemini response invalid JSON, attempting fallback cleanup.');
+      logger.warn("Gemini response invalid JSON, attempting fallback cleanup.");
       const cleaned = responseText
-        .replace(/^[^\{\[]+/, '')
-        .replace(/[^\}\]]+$/, '');
+        .replace(/^[^\{\[]+/, "")
+        .replace(/[^\}\]]+$/, "");
       return JSON.parse(cleaned) as T;
     }
   }
@@ -21,9 +26,10 @@ export class GeminiService {
    */
   async extractTravelData(documentText: string): Promise<TravelData> {
     try {
-      logger.info(`Calling Gemini model ${env.GEMINI_MODEL} to extract structured travel data...`);
-      
-      
+      logger.info(
+        `Calling Gemini model ${env.GEMINI_MODEL} to extract structured travel data...`,
+      );
+
       const systemInstruction = `
         You are an expert travel assistant specializing in parsing booking confirmations, tickets, and boarding passes.
         Analyze the raw text and extract all relevant travel entities.
@@ -65,16 +71,16 @@ export class GeminiService {
       `;
 
       const result = await genAI.models.generateContent({
-  model: env.GEMINI_MODEL,
-  contents: `${systemInstruction}
+        model: env.GEMINI_MODEL,
+        contents: `${systemInstruction}
 
 ${prompt}`,
-  config: {
-    temperature: 0.1,
-  },
-});
+        config: {
+          temperature: 0.1,
+        },
+      });
 
-const responseText = result.text ?? "";
+      const responseText = result.text ?? "";
 
       logger.debug(`Gemini Raw Response: ${responseText}`);
       const parsed = this.parseJsonResponse<TravelData>(responseText);
@@ -90,9 +96,9 @@ const responseText = result.text ?? "";
    */
   async generateItinerary(travelData: TravelData): Promise<ItineraryData> {
     try {
-      logger.info(`Calling Gemini model ${env.GEMINI_MODEL} to generate travel itinerary...`);
-      
-      
+      logger.info(
+        `Calling Gemini model ${env.GEMINI_MODEL} to generate travel itinerary...`,
+      );
 
       const systemInstruction = `
         You are a premium AI Travel Planner. Generate a comprehensive day-by-day travel itinerary based on the provided travel data (flights, hotels, bookings).
@@ -148,17 +154,17 @@ const responseText = result.text ?? "";
         Generate the complete day-by-day travel itinerary.
       `;
 
- const result = await genAI.models.generateContent({
-  model: env.GEMINI_MODEL,
-  contents: `${systemInstruction}
+      const result = await genAI.models.generateContent({
+        model: env.GEMINI_MODEL,
+        contents: `${systemInstruction}
 
 ${prompt}`,
-  config: {
-    temperature: 0.7,
-  },
-});
+        config: {
+          temperature: 0.7,
+        },
+      });
 
-const responseText = result.text ?? "";
+      const responseText = result.text ?? "";
 
       logger.debug(`Gemini Raw Response: ${responseText}`);
       const parsed = this.parseJsonResponse<ItineraryData>(responseText);

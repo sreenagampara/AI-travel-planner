@@ -51,6 +51,7 @@ export class ItineraryService {
         logger.info(`Attempting to download and parse file: ${file.filename} (${file.mimetype})`);
         try {
           // Download file buffer
+          console.log("Cloudinary URL:", file.path);
           const response = await axios.get(file.path, {
             responseType: 'arraybuffer',
             timeout: 30000, // 30s timeout

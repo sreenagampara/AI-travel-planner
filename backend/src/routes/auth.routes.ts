@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { register, login } from '../controllers/authController';
-import { passwordPolicy } from '../middleware/passwordPolicy';
+import { passwordPolicy } from '../middlewares/passwordPolicy';
 import { validationResult } from 'express-validator';
 
 const router = Router();
